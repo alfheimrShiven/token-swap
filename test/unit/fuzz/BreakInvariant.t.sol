@@ -53,10 +53,17 @@ contract BreakInvariant is StdInvariant, Test {
         targetContract(address(fuzzHandler));
     }
 
-    function statefulFuzz_ProductMarketMakerConstantRemainsSame() public {
+    function statefulFuzz_ProductMarketMakerXVariableCheck() public {
         assertEq(
             fuzzHandler.actualDeltaWEth(),
             fuzzHandler.expectedDeltaWEth()
+        );
+    }
+
+    function statefulFuzz_ProductMarketMakerYVariableCheck() public {
+        assertEq(
+            fuzzHandler.actualDeltaPoolToken(),
+            fuzzHandler.expectedDeltaPoolToken()
         );
     }
 }
