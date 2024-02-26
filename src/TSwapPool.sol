@@ -190,6 +190,7 @@ contract TSwapPool is ERC20 {
         uint256 poolTokensToDeposit,
         uint256 liquidityTokensToMint
     ) private {
+        // @audit-info: Would be better to use safeMint() instead of _mint()
         _mint(msg.sender, liquidityTokensToMint);
         emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
 
@@ -271,6 +272,8 @@ contract TSwapPool is ERC20 {
         // totalPoolTokensOfPool) + (wethToDeposit * poolTokensToDeposit) = k
         // (totalWethOfPool * totalPoolTokensOfPool) + (wethToDeposit * totalPoolTokensOfPool) = k - (totalWethOfPool *
         // poolTokensToDeposit) - (wethToDeposit * poolTokensToDeposit)
+
+        // @audit-info: Magic numbers should be avoided. Turn them into constants.
         uint256 inputAmountMinusFee = inputAmount * 997;
         uint256 numerator = inputAmountMinusFee * outputReserves;
         uint256 denominator = (inputReserves * 1000) + inputAmountMinusFee;
@@ -288,6 +291,7 @@ contract TSwapPool is ERC20 {
         revertIfZero(outputReserves)
         returns (uint256 inputAmount)
     {
+        // @audit-info: Magic numbers should be avoided. Turn them into constants.
         return
             ((inputReserves * outputAmount) * 10000) /
             ((outputReserves - outputAmount) * 997);
@@ -301,6 +305,7 @@ contract TSwapPool is ERC20 {
         uint64 deadline
     )
         public
+        // @audit-info: The function access specifier can be changed to external for gas savings since this isn't used internally.
         revertIfZero(inputAmount)
         revertIfDeadlinePassed(deadline)
         returns (uint256 output)
@@ -398,6 +403,7 @@ contract TSwapPool is ERC20 {
         // @audit breaks the protocol invariant x.y = k
         if (swap_count >= SWAP_COUNT_MAX) {
             swap_count = 0;
+            // @audit-info: Magic numbers should be avoided. Turn them into constants.
             outputToken.safeTransfer(msg.sender, 1_000_000_000_000_000_000);
         }
         emit Swap(
@@ -448,6 +454,7 @@ contract TSwapPool is ERC20 {
     }
 
     function getPriceOfOneWethInPoolTokens() external view returns (uint256) {
+        // @audit-info: Magic numbers should be avoided. Turn them into constants.
         return
             getOutputAmountBasedOnInput(
                 1e18,
